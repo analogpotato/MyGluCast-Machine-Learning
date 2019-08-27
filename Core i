@@ -1,0 +1,37 @@
+import pandas as panda
+from sklearn.linear_model import LinearRegression
+from google.colab import files
+uploaded = files.upload()
+data = panda.read_csv(list(uploaded.keys())[0])
+
+data = data.fillna(data.mean())
+feature_names = [
+    'Insulin Intake Calced',
+    'Last 3 Hour Calories',
+    'Carbs Intake',
+    'Avg Glucose Current Hour',
+    'Hour',
+    'Prev Hour Glucose Min',
+    'Prev Hour Glucose Max',
+     ]
+features = data[feature_names]
+target_name = "Glucose High in Next Three Hours"
+target = data[target_name]
+
+data_model = LinearRegression().fit(features, target)
+
+coef = data_model.coef_
+intercept = data_model.intercept_
+score = data_model.score(features, target)
+
+print(f"Score == {score}")
+print("Glucose High In Three Hours =", int(intercept), "+", " + ".join(["{} * {:.4f}\n".format(f, c) for f, c in zip(features, coef)]))
+
+
+burned_cals = 450
+carb_intake = 30
+insulin_intake = 7
+cur_glucose = 165
+
+glucose_3_hours_later = 164 + (-.0584*burned_cals) + (carb_intake * 1.0914) + (insulin_intake * -5.8712) + (cur_glucose * 1.0704)
+print(glucose_3_hours_later)
